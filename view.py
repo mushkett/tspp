@@ -1,23 +1,27 @@
 import PySimpleGUI as Sg
+from controller import get_flights, get_plane_list, save_to_docx, authorization
 
 
 def main_window():
+    flights = []
+    is_authorized = False
     Sg.theme("DarkAmber")
-    search = [[Sg.Text('Місто'), Sg.OptionMenu(['Київ', 'Суми', 'Париж'])],
-              [Sg.InputText('ХХ годин')],
+
+    search = [[Sg.Text('Номер літака'), Sg.OptionMenu(get_plane_list())],
+              [Sg.Text('Кількість льотних годин'), Sg.InputText('')],
               [Sg.Button('Вибрати')],
-              [Sg.Button('Зберегти')], ]
+              ]
 
     table = [
         Sg.Table(
-            headings=['Номер рейсу', 'Пункт призначення', 'Кількість льотних годин', 'Номер маршруту'],
+            headings=['Номер літака', 'Кількість льотних годин', 'Номер рейсу'],
             values=[
-                ['1', '2', '3', '4']
-            ]
+                []
+            ], key='-table-'
         )
     ]
 
-    col1 = [[Sg.Button("Файл")],
+    col1 = [[Sg.Button("Зберегти в файл")],
             [Sg.Frame('Пошук рейсів',
                       layout=[
                           [Sg.Column(search, element_justification='c')]
@@ -26,7 +30,7 @@ def main_window():
              ]
             ]
 
-    col2 = [[Sg.Button('Рейси')]]
+    col2 = [[Sg.Button('Рейси', visible=False)]]
 
     col3 = [
         [Sg.Button('Пошук рейсів')],
@@ -65,6 +69,16 @@ def main_window():
         event, values = window.read()
         if event == Sg.WINDOW_CLOSED or event == "Cancel":
             break
+        elif event == "Вибрати":
+            flights = get_flights(values[0], values[1])
+            window.Element('-table-').update(flights)
+        elif event == "Зберегти в файл":
+            save_to_docx(flights)
+        elif event == "Авторизація":
+            is_authorized = authorization()
+            if is_authorized:
+                pass
+
         print('you entered ', values[0], ' ', values[1])
 
 
