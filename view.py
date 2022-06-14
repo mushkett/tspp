@@ -1,5 +1,7 @@
 import PySimpleGUI as Sg
-from controller import get_flights, get_plane_list, save_to_docx, authorization, add_flight
+from controller.db import get_flights, get_plane_list, add_flight
+from controller.save_to_dock import save_to_docx
+from controller.authorization import authorization
 
 
 def main_window():
